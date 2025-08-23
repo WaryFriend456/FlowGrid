@@ -1,0 +1,70 @@
+# # Visual Studio / .NET
+# [Oo]bj/
+# [Bb]in/
+# .vs/
+
+# # Node / Frontend
+# node_modules/
+# dist/
+# .env.local
+
+# === Visual Studio / .NET ===
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Published output
+publish/
+**/publish/
+
+# Rider / JetBrains
+.idea/
+
+# VS Code
+.vscode/
+
+# .NET user secrets or local config (do NOT commit)
+appsettings.Development.json
+appsettings.*.Local.json
+secrets.json
+
+# === Node / Frontend ===
+node_modules/
+dist/
+.build/
+.cache/
+# bun lock is usually fine to commit, but ignore other lock tmp files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.*          # includes .env.local, .env.production, etc.
+
+# === Tests / Coverage ===
+coverage/
+*.coverage
+.nyc_output/
+
+# === Docker ===
+.dockerignore
+docker-compose.override.yml
+
+# === Logs & temporary files ===
+logs/
+*.log
+tmp/
+temp/
+
+# === OS files ===
+.DS_Store
+Thumbs.db
+
+# === Misc ===
+*.sql            # optional: ignore DB dumps if you keep them locally
+.vagrant/
