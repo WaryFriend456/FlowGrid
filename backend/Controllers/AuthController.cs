@@ -1,7 +1,9 @@
 ﻿using backend.Models;
 using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace backend.Controllers
 {
@@ -60,14 +62,14 @@ namespace backend.Controllers
 
             if(user == null)
             {
-                return Unauthorized("Invalid Credentials");
+                return Unauthorized(new { message = "Invalid Credentials" });
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
             if (!result.Succeeded)
             {
-                return Unauthorized("Invalid Credentials");
+                return Unauthorized(new { message = "Invalid Credentials" });
             }
 
             return Ok(
@@ -75,6 +77,15 @@ namespace backend.Controllers
                     token = await _tokenService.CreateToken(user)
                 }
             );
+        }
+
+        [HttpGet("protected")]
+        [Authorize]
+        public IActionResult GetProtectedData()
+        {
+            //var username = User.FindFirst(JwtRegisteredClaimNames.GivenName)?.Value;
+            var username = User.Identity?.Name;
+            return Ok(new { message = $"Hello {username}, welcome to the protected route!" });
         }
     }
 }

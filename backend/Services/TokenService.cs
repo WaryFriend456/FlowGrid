@@ -26,8 +26,11 @@ namespace backend.Services
             // These are the "claims" or pieces of information we want to include in the token
             var claims = new List<Claim>
             {
+                new (JwtRegisteredClaimNames.NameId, user.Id),
                 new (JwtRegisteredClaimNames.Email, user.Email),
-                new (JwtRegisteredClaimNames.GivenName, user.UserName)
+                new (JwtRegisteredClaimNames.GivenName, user.UserName),
+                new (ClaimTypes.Email, user.Email),
+                new (ClaimTypes.Name, user.UserName)
             };
 
             // This creates a security credentials using the key and a hashing algorithm
