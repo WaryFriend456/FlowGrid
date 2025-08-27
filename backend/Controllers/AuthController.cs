@@ -1,4 +1,5 @@
-﻿using backend.Models;
+﻿using backend.Dtos;
+using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,9 +15,16 @@ namespace backend.Controllers
         private readonly UserManager<AppUser> _userManager = userManager;
         private readonly SignInManager<AppUser> _signInManager = signInManager;
         private readonly TokenService _tokenService = tokenService;
-    
+
+        /// <summary>
+        /// Registers a new User in the system
+        /// </summary>
+        /// <param name="registerDto">The User's registraion details (username, email, password). </param>
+        /// <returns>A JWT if registrationis successful</returns>
+        /// <response code="200">Returns a JWT token</response>
+        /// <response code="400">If the User details are invalid</response> 
         [HttpPost("register")]
-    
+        [ProducesResponseType(typeof(TokenDto), 200)]
         public async Task<IActionResult> Register([FromBody] Dtos.RegisterDto registerDto)
         {
                 //if (!ModelState.IsValid)
@@ -43,13 +51,21 @@ namespace backend.Controllers
                 return BadRequest(roleResult.Errors);
             }
 
-            return Ok(new
+            return Ok(new TokenDto
             {
                 token = await _tokenService.CreateToken(appUser)
             });
         }
 
+        /// <summary>
+        /// Logs in an existing user
+        /// </summary>
+        /// <param name="loginDto">The User's login details (username, password).</param>
+        /// <returns>A JWT if login is successful</returns>
+        /// <response code="200">Returns a JWT token</response>
+        /// <response code="400">If the User details are invalid</response>
         [HttpPost("login")]
+        [ProducesResponseType(typeof(TokenDto), 200)]
         public async Task<IActionResult> Login([FromBody] Dtos.LoginDto loginDto)
         {
             //if (!ModelState.IsValid)
@@ -73,7 +89,7 @@ namespace backend.Controllers
             }
 
             return Ok(
-                new {
+                new TokenDto{
                     token = await _tokenService.CreateToken(user)
                 }
             );
