@@ -38,8 +38,8 @@ namespace backend.Controllers
             //    .ToListAsync();
 
             var boards = await _context.Boards
-                .Include(b => b.Lists)
-                .ThenInclude(l => l.Cards)
+                .Include(b => b.Lists.OrderBy(l => l.Order))
+                .ThenInclude(l => l.Cards.OrderBy(c => c.Order))
                 .Where(b => b.AppUserId == userId)
                 .Select(b => new BoardDto
                 {
@@ -49,12 +49,14 @@ namespace backend.Controllers
                     {
                         Id = l.Id,
                         Title = l.Title,
+                        Order = l.Order,
                         BoardId = l.BoardId,
                         Cards = l.Cards.Select(c => new CardDto
                         {
                             Id = c.Id,
                             Title = c.Title,
                             Description = c.Description,
+                            Order = c.Order,
                             ListId = c.ListId
                         }).ToList()
                     }).ToList()

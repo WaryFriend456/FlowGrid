@@ -46,16 +46,19 @@ namespace backend.Controllers
 
             var taskList = await _context.TaskLists
                 .Where(l => l.BoardId == boardId)
+                .OrderBy(l => l.Order)
                 .Select(l => new TaskListDto
                 {
                     Id = l.Id,
                     Title = l.Title,
+                    Order = l.Order,
                     BoardId = l.BoardId,
-                    Cards = l.Cards.Select(c => new CardDto
+                    Cards = l.Cards.OrderBy(c => c.Order).Select(c => new CardDto
                     {
                         Id = c.Id,
                         Title = c.Title,
                         Description = c.Description,
+                        Order = c.Order,
                         ListId = c.ListId
                     }).ToList()
                 }).ToListAsync();
@@ -89,10 +92,19 @@ namespace backend.Controllers
                 return Forbid();
             }
 
+            //var maxOrder = await _context.TaskLists
+            //    .Where(l => l.BoardId == boardId)
+            //    .Select(l => (int?)l.Order) // Use (int?) to allow for nulls (empty lists)
+            //    .MaxAsync();
+
+            var newOrder = await _context.TaskLists
+                .CountAsync(l => l.BoardId == boardId);
+
             var taskList = new TaskList
             {
                 Title = listDto.Title,
-                BoardId = boardId
+                BoardId = boardId,
+                Order = newOrder
             };
 
             await _context.TaskLists.AddAsync(taskList);
@@ -102,7 +114,8 @@ namespace backend.Controllers
             {
                 Id = taskList.Id,
                 Title = taskList.Title,
-                BoardId = taskList.BoardId
+                BoardId = taskList.BoardId,
+                Order = taskList.Order
             });
         }
 

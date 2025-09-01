@@ -11,6 +11,8 @@ namespace backend.Models
 
         public string? Description { get; set; }
 
+        public int Order { get; set; }
+
         // Foreign key to the list it belongs to
         public int ListId { get; set; }
         public TaskList List {  get; set; }

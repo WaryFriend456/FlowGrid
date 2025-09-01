@@ -49,11 +49,13 @@ namespace backend.Controllers
 
             var cards = await _context.Cards
                 .Where(c => c.ListId == listId)
+                .OrderBy(c => c.Order)
                 .Select(c => new CardDto
                 {
                     Id = c.Id,
                     Title = c.Title,
                     Description = c.Description,
+                    Order = c.Order,
                     ListId = c.ListId
                 })
                 .ToListAsync();
@@ -92,11 +94,20 @@ namespace backend.Controllers
                 return Forbid();
             }
 
+            //var maxOrder = await _context.Cards
+            //    .Where(c => c.ListId == listId)
+            //    .Select(c => (int?)c.Order) // Use (int?) to allow for nulls (empty lists)
+            //    .MaxAsync();
+
+            var newOrder = await _context.Cards
+                .CountAsync(c => c.ListId == listId);
+
             var card = new Card
             {
                 Title = cardDto.Title,
                 Description = cardDto.Description,
-                ListId = listId
+                ListId = listId,
+                Order = newOrder
             };
 
             await _context.Cards.AddAsync(card);
@@ -107,6 +118,7 @@ namespace backend.Controllers
                 Id = card.Id,
                 Title = card.Title,
                 Description = card.Description,
+                Order = card.Order,
                 ListId = card.ListId
             });
         }

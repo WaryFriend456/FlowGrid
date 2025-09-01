@@ -9,6 +9,8 @@ namespace backend.Models
         [Required]
         public string Title { get; set; }
 
+        public int Order { get; set; }
+
         // Foreign key to the Board it belongs to
         public int BoardId { get; set; }
         public Board Board { get; set; }
