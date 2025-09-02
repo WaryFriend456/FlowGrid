@@ -37,10 +37,67 @@ namespace backend.Controllers
             //    .Where(b => b.AppUserId == userId)
             //    .ToListAsync();
 
+
+            // Only use when you need to include lists and cards
+            //var boards = await _context.Boards
+            //    .Include(b => b.Lists.OrderBy(l => l.Order))
+            //    .ThenInclude(l => l.Cards.OrderBy(c => c.Order))
+            //    .Where(b => b.AppUserId == userId)
+            //    .Select(b => new BoardDto
+            //    {
+            //        Id = b.Id,
+            //        Title = b.Title,
+            //        Lists = b.Lists.Select(l => new TaskListDto
+            //        {
+            //            Id = l.Id,
+            //            Title = l.Title,
+            //            Order = l.Order,
+            //            BoardId = l.BoardId,
+            //            Cards = l.Cards.Select(c => new CardDto
+            //            {
+            //                Id = c.Id,
+            //                Title = c.Title,
+            //                Description = c.Description,
+            //                Order = c.Order,
+            //                ListId = c.ListId
+            //            }).ToList()
+            //        }).ToList()
+            //    }).ToListAsync();
+
             var boards = await _context.Boards
+                .Where(b => b.AppUserId == userId)
+                .Select(b => new // Return a simpler object for the list view
+                {
+                    b.Id,
+                    b.Title
+                })
+                .ToListAsync();
+
+            return Ok(boards);
+        }
+
+        /// <summary>
+        /// Gets a specific board by Id, including its lists and cards, for the currently authenticated user.
+        /// </summary>
+        /// <param name="id">The Id of the board to retrieve</param>
+        /// <returns>The requested board</returns>
+        /// <response code="200">Returns the requested board</response>
+        /// <response code="401">If the user is not authenticated</response>
+        /// <response code="404">If the board is not found</response>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBoard(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User not found" });
+            }
+
+            var board = await _context.Boards
                 .Include(b => b.Lists.OrderBy(l => l.Order))
                 .ThenInclude(l => l.Cards.OrderBy(c => c.Order))
-                .Where(b => b.AppUserId == userId)
+                .Where(b => b.AppUserId == userId && b.Id == id)
                 .Select(b => new BoardDto
                 {
                     Id = b.Id,
@@ -60,9 +117,9 @@ namespace backend.Controllers
                             ListId = c.ListId
                         }).ToList()
                     }).ToList()
-                }).ToListAsync();
+                }).FirstOrDefaultAsync();
 
-            return Ok(boards);
+            return board == null ? NotFound(new {message = "Board not found"}) : Ok(board);
         }
 
         /// <summary>
