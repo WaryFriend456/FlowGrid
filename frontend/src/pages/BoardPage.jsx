@@ -34,7 +34,7 @@ export default function BoardPage() {
                 <div style={{ display: "flex", flexDirection: "row", overflowX: "auto" }}>
                     <AddListForm boardId={boardId} onListAdded={fetchBoard} />
                     {board?.lists.map(list => (
-                        <TaskList key={list.id} list={list} />
+                        <TaskList key={list.id} list={list} onBoardUpdate={fetchBoard} />
                     ))}
                 </div>
             </div>

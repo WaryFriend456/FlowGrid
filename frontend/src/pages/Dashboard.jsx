@@ -1,6 +1,7 @@
 import { authFetch } from "../services/api.js";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Button } from '../components/ui/button.tsx'
 
 function Dashboard() {
   const [boards, setBoards] = useState([]);
@@ -49,18 +50,18 @@ function Dashboard() {
   return (
     <>
       <div>
-        <h1>Your Boards</h1>
+        <h1 className="text-3xl font-bold underline text-blue-500">Your Boards</h1>
         <form onSubmit={handleCreateBoard}>
           <input
           type="text"
           value={newBoardTitle}
           onChange={(e) => setNewBoardTitle(e.target.value)}
           placeholder="New Board Title"/>
-          <button type="submit">Create Board</button>
+          <Button type="submit" variant="outline">Create Board</Button>
         </form>
         <ul>
           {boards.map(board => (
-            <li key={board.id}>
+            <li key={board.id} className="border p-4">
               <Link to={`/board/${board.id}`}>{board.title}</Link>
               {/* {board.title} */}
             </li>
